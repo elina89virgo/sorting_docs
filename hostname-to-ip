@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import openpyxl
+import csv
+import sys 
+import re
+
+wb = openpyxl.load_workbook("Not-really-disabled Interfaces.xlsx")
+ws = wb.get_sheet_by_name("Sheet1")
+
+with open ('Not-really-disabled Interfaces.csv', 'w') as a:
+	x = csv.writer(a)
+	for row in ws.iter_rows(min_row=2, max_col=1, values_only=True):
+		x.writerow(row)
+
+with open ("hostnames.txt", 'w') as my_output:
+	with open('Not-really-disabled Interfaces.csv', 'r') as my_input:
+		[ my_output.write(" ".join(row)+'\n') for row in csv.reader(my_input)]
+	my_output.close()
+
+f = open("hostnames.txt", 'r')
+lines = f.readlines()
+
+print(len(lines))
+
+with open("ip_addresses.txt", 'w') as ip:
+	for line in lines:
+		digit = line[-8:]
+		value = re.sub('-', '.', digit)
+		ip.write('10.1.' + str(value))
+	ip.close()
+
+with open ('ports.csv', 'w') as b:
+	y = csv.writer(b)
+	for row in ws.iter_rows(min_row=2, min_col=2, max_col=2, values_only=True):
+		y.writerow(row)
+
+with open ("ports.txt", 'w') as my_output:
+	with open('ports.csv', 'r') as my_input:
+		[ my_output.write(" ".join(row)+'\n') for row in csv.reader(my_input)]
+	my_output.close()
